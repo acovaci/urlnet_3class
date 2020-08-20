@@ -1,34 +1,65 @@
-**3-class URLNet**
-==========
+3-class URLNet
+==============
 
 This repo contains a modified version of the original URLNet repository. In addition to the original binary classification that the original network is able to do, this network can learn to discriminate between two types of phishing and clean URLs (here generated vs. hijacked vs. clean).
+Training the network
 
 In order to train the network, you must supply a tab-separated file with clean URLs labelled as -1, generated as +1 and hijacked as +2:
+
 ```
 -1  clean.url.com
 +1 generatedexample.com
 +2 hijacked.example.co.uk
 ```
 
-By setting the `--labelling` class, you can specify whether the network does binary or ternary classification:
-- `--labelling any` -> positive: generated OR hijacked; negative: clean
-- `--labelling generated` -> positive: generated; negative: clean OR hijacked
-- `--labelling infected` -> positive: hijacked; negative: clean OR generated
-- `--labelling multiclass` -> 3-class hijacked vs generated vs clean
+Training and testing scripts with different options can be found under the various shell scripts.
 
-WARNING: when using `--labelling infected`, the prediction labels will be +1, not +2.
+Quick start
+-----------
+In principle, for using the tested model, all you need to do is supply the paths to the checkpoints, char, word and subword dirs and the path to the URLs file. **Keep in mind that this model is trained on domains, and not on URLs.** (see `demo.py`):
+```{python}
+model = URLNet(data_dir = "demo/urls.txt",
+               subword_dict_dir = "runs/1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3/subwords_dict.p",
+               word_dict_dir = "runs/1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3/words_dict.p",
+               checkpoint_dir = "runs/1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3/checkpoints/",
+               char_dict_dir = "runs/1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3/chars_dict.p",
+               emb_mode = 5)
+
+pred, scores = model.predict()
+```
+
+Additional options
+------------------
+
+Training is done using the modified `train.py`, and testing using the modified `test.py`. These can be called using shell scripts to set the various flags explained in the original documentation of the model below.
+
+By setting the `--labelling` flag, you can specify whether the network does binary or ternary classification:
+
+    `--labelling any` -> positive: generated OR hijacked; negative: clean
+    `--labelling generated` -> positive: generated; negative: clean OR hijacked
+    `--labelling infected` -> positive: hijacked; negative: clean OR generated
+    `--labelling multiclass` -> 3-class hijacked vs generated vs clean
+
+WARNING: when using `--labelling` infected, the prediction labels will be +1, not +2.
 
 Also, you can penalise the network for mislabeling clean data by using `--balancing [float: alpha]`. This will multiply the loss by alpha in case of false positives, thus increasing its precision. (See PDF for more detail)
+Important folders and files
 
-In this repo, under `runs/`, you can find the network trained for 3-class **domain (NOT URL)** classification, named `TOBENAMED`.
+In the original directory (but not this repo; see next section), under `runs/`, you can find the network trained for 3-class domain (NOT URL) classification, named `1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3` for the network trained with \alpha = 4 ballancing (see PDF).
 
-A brute example of a classification over a single URL can be found in `run_network.py`.
-
-Training and testing scripts with different options can be found under the various shell scripts.
+A brute example of a classification over a few URLs in `demo/urls.txt` can be found in `demo.py`.
 
 Under `data_prep.py` you can find an example of using DASK to turn the dataset into a txt file ready for training.
 
+Volumes used for this project
+----------------------------
+
+The network (and all files in this repo) is situated under the volume **`anomaly-detection-data`** under the directory `urlnet_multiclass`.
+
+The data is situated under the volume **`anomaly-detection-data`** (here mounted as /mnt/data) under the directory strong_dns_augmented. In this folder, there are various datasets obtained from the Bitdefender (mainly `strong_dns`, `ot_phishing_feed` and `urlstatus_query`)
+
 Original paper: https://arxiv.org/abs/1802.03162
+
 Further, this is the reproduced README of the original repo at https://github.com/Antimalweb/URLNet:
 
 Introduction
