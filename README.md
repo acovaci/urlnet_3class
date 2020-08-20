@@ -18,6 +18,8 @@ Quick start
 -----------
 In principle, for using the tested model, all you need to do is supply the paths to the checkpoints, char, word and subword dirs and the path to the URLs file. **Keep in mind that this model is trained on domains, and not on URLs.** (see `demo.py`):
 ```{python}
+from model import URLNet
+
 model = URLNet(data_dir = "demo/urls.txt",
                subword_dict_dir = "runs/1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3/subwords_dict.p",
                word_dict_dir = "runs/1000000_emb5_dlm1_32dim_minwf1_1conv3456_5ep_bal3/words_dict.p",
@@ -27,6 +29,8 @@ model = URLNet(data_dir = "demo/urls.txt",
 
 pred, scores = model.predict()
 ```
+
+For ease of use, a wrapper over the testing script (`test.py`) can be found in `model.py`. This can be easily extended in the future to integrate the training routine.
 
 Additional options
 ------------------
