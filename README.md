@@ -58,7 +58,7 @@ Under `data_prep.py` you can find an example of using DASK to turn the dataset i
 Volumes used for this project
 ----------------------------
 
-The network (and all files in this repo) is situated under the volume **`anomaly-detection-data`** under the directory `urlnet_multiclass`.
+The network (and all files in this repo) is situated under the volume **`acovaci-urlnet`**.
 
 The data is situated under the volume **`anomaly-detection-data`** (here mounted as /mnt/data) under the directory strong_dns_augmented. In this folder, there are various datasets obtained from Bitdefender streams (mainly `strong_dns`, `ot_phishing_feed` and `urlstatus_query`)
 
